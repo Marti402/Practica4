@@ -1,8 +1,21 @@
-# Practica4
+# Practica 4: Sistemas operativos en tiempo real(FreeRTOS)
 Participants: Alexandre Pascual / Marti Vila
 
 
-## Parte 1
+## Introducción
+En esta práctica se ha explorado el funcionamiento de un _Sistema operativo en tiempo real_ en el **ESP32**, utilizando **FreeRTOS** para manejar múltiples tareas en paralelo.
+
+El laboratorio se divide en dos partes:
+1. **Creación de tareas en FreeRTOS**.
+2. **Semáforos**, controlando el encendido de LEDs.
+
+
+## Parte 1: Creación de Tareas con FreeRTOS
+
+### **Objetivo**
+Implementar y ejecutar **múltiples tareas simultàneas** en el ESP32 utilizando FreeRTOS.
+
+#### **Código Implementado**
 ```c++
 #include<Arduino.h>
 
@@ -35,11 +48,34 @@ void anotherTask(void *parameter) {
 
   vTaskDelete(NULL);
 }
-
 ```
 
+### **Explicación del Código**
+- Se crea una tarea en _FreeRTOS_ (`anotherTask`) usando `xTaskCreate()`.
+- La tarea imprime `"this is another Task"` cada segundo en el **monitor serie**.
+- Simultániamente, `loop()` imprime `"this is ESP32 Task"`.
 
-## Parte 2
+### **Salida Esperada en el Monitor Serie**
+```
+this is ESP32 Task
+this is another Task
+this is ESP32 Task
+this is another Task
+...
+```
+
+## Parte 2: Sincronización de Tareas con Semáforos
+
+### **Objetivo**
+Utilizar **semáforos en FreeRTOS** para sincronizar dos tareas que controlan dos **LEDs**.
+
+### **Desarrollo**
+Se implementaron dos tareas, donde:
+- Una tarea enciende y apaga el LED **rojo**.
+- Otra tarea enciende y apaga el LED **verde**.
+- Se usa un **semáforo** para evitar que ambos LEDs se enciendan al mismo tiempo.
+
+#### **Código Implementado**
 ```c++
 #include <Arduino.h>
 #include "freertos/FreeRTOS.h"
@@ -97,8 +133,26 @@ void setup() {
 void loop() {
     // No hacer nada en loop, las tareas de FreeRTOS manejan el flujo
 }
-
 ```
 
+### **Explicación del Código**
+- Se definen dos tareas: `tareaEncenderRojo()` y `tareaEncenderVerde()`.
+- Se usa un **semáforo** (`xSemaphore`) para evitar que ambos LEDs se enciendan a la vez.
+- Cada LED se **enciende por 1 segundo** y luego se apaga según el funcionamiento del semáforo.
+- El `loop()` está vacío, ya que el control de los LEDs lo gestionan las tareas de FreeRTOS.
 
+### **Salida Esperada en el Monitor Serie**
+```
+LED Rojo Encendido
+LED Rojo Apagado
+LED Verde Encendido
+LED Verde Apagado
+...
+```
+
+## Conclusiones
+- **FreeRTOS permite la ejecución de múltiples tareas** de forma eficiente en el ESP32.
+- Implementamos un **paralelismo real**, mostrando cómo dos tareas pueden ejecutarse por separado.
+- Se usó un **semáforo para sincronización** para evitar que se superponga una tarea con la otra.
+- Se ha logrado **controlar LEDs de manera sincronizada**, demostrando un uso práctico de FreeRTOS.
 
